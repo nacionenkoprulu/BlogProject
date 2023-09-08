@@ -59,12 +59,43 @@
 					<td>
 						<a asp-action="Details" asp-route-id="@item.Id">Details</a>&nbsp;|&nbsp;
 						<a asp-action="Edit" asp-route-id="@item.Id">Edit</a>&nbsp;|&nbsp;
-						<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+						@* <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+
+                        <a href="#" onclick="deleteBlog(@item.Id);">Delete</a> @* AlertifyJS için oluşturuyoruz *@
 					</td>
 				</tr>
 		}
     </tbody>
 </table>
+
+@section Scripts {
+
+    <link href="~/lib/alertifyjs/css/alertify.min.css" rel="stylesheet" />
+    <script src="~/lib/alertifyjs/alertify.min.js"></script>
+
+
+    <script>
+
+        function deleteBlog(id) {
+            alertify.confirm(
+                "Warning!",
+                "Are you sure want to delete this blog?",
+                function () { //Yes
+                    window.location.href = "/Blogs/Delete/" + id
+                },
+                function () {
+
+                }
+            ).set('labels', { ok: 'Yes', cancel: 'No' });
+
+        }
+
+    </script>
+
+
+
+}
 
 
 

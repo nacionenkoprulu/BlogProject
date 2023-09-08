@@ -1,4 +1,6 @@
-﻿using AppCore.Records.Bases;
+﻿#nullable disable
+
+using AppCore.Records.Bases;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +23,13 @@ namespace Business.Models
         public bool IsActive { get; set; }
 
         public int RoleId { get; set; }
+
+
+
+        //Gösterim için eklenenler
+        public RoleModel Role { get; set; } = new RoleModel();
+
+
 
     }
 }

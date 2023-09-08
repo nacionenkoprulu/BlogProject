@@ -13,24 +13,26 @@ namespace Business.Models
 
         #region Entity'den gelenler
 
-        [Required]
-        [StringLength(150)]
+        [Required(ErrorMessage = "{0} is required!")]
+        [MinLength(3, ErrorMessage = "{0} must be minimum {1} characters!")] 
+        [MaxLength(150, ErrorMessage = "{0} must be maximum {1} characters!")] 
+        [DisplayName("Blog Title")]
         public string Title { get; set; }
 
-        [Required]
-        [StringLength(300)]
+        [Required(ErrorMessage = "{0} is required!")]
+        [StringLength(300, ErrorMessage = "{0} must be maximum {1} characters!")]
         public string Content { get; set; }
 
         public DateTime CreateDate { get; set; }
 
         public DateTime? UpdateDate { get; set; }
 
-        [Range(1,5)]
+        [Range(1, 5, ErrorMessage = "{0} must be between {1} and {2}!")]
         public byte? Score { get; set; }
 
-		[Required]
-		[DisplayName("User")]
-		public int? UserId { get; set; }
+        [DisplayName("User")]
+        [Required(ErrorMessage = "{0} is required!")]
+        public int? UserId { get; set; }
 
         #endregion
 
@@ -50,8 +52,9 @@ namespace Business.Models
 		[DisplayName("Tags")]
         public List<TagModel> TagsDisplay { get; set; }
 
-		[DisplayName("Tags")]
-		public List<int> TagIds { get; set; }
+        [DisplayName("Tags")]
+        [Required(ErrorMessage = "{0} are required!")]
+        public List<int> TagIds { get; set; }
 
         #endregion
 
