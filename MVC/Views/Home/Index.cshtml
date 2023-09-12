@@ -4,5 +4,13 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <p>Welcome to my blog!</p>
+    }
+    else
+    {
+        <p>My name is @User.Identity.Name</p>
+    }
+    
 </div>

@@ -1,6 +1,7 @@
 ﻿using AppCore.Results;
 using AppCore.Results.Bases;
 using Business.Models;
+using DataAccess.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Business.Services
     public interface IAccountService
     {
         Result Login(AccountLoginModel accountLoginModel, UserModel UserResultModel);
+
+        Result Register(AccountRegisterModel model);
     }
 
 
@@ -35,8 +38,23 @@ namespace Business.Services
 
             UserResultModel.UserName = user.UserName;
             UserResultModel.Role.Name = user.Role.Name;
+            UserResultModel.Id = user.Id;
 
             return new SuccessResult();
+        }
+
+        public Result Register(AccountRegisterModel model)
+        {
+            UserModel userModel = new UserModel()
+            {
+                UserName = model.UserName,
+                RoleId = Convert.ToInt16(Roles.User),
+                IsActive = true,
+                Password = model.Password,
+
+            };
+
+            return _userService.Add(userModel);
         }
     }
 }

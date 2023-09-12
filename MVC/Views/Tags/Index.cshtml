@@ -13,9 +13,13 @@
     <p>@TempData["Message"]</p>
 }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table display" id="blogs" style="width:100%">
     <thead>
         <tr>
@@ -38,9 +42,14 @@
 						@Html.DisplayFor(modelItem => item.IsPopularDisplay)
 					</td>
 					<td>
-						@* <a asp-action="Details" asp-route-id="@item.Id">Details</a>&nbsp;|&nbsp; *@
-						<a asp-action="Edit" asp-route-id="@item.Id">Edit</a>&nbsp;|&nbsp;
-						<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @* <a asp-action="Details" asp-route-id="@item.Id">Details</a>&nbsp;|&nbsp; *@
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        @:&nbsp;| &nbsp;
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                    
 					</td>
 				</tr>
 		}

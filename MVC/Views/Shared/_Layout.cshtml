@@ -29,6 +29,28 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Db" asp-action="Seed">DB Seed</a>
                         </li>
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        @if(!User.Identity.IsAuthenticated) //sisteme giriş yapmadıysa
+                        {
+                            <li class="nav-item"><a class="nav-link text-light btn btn-success navbar-btn" asp-area="Account" asp-controller="Users" asp-action="Login">Login</a></li>
+                            @:&nbsp;
+                            <li class="nav-item"><a class="nav-link text-light btn btn-warning navbar-btn" asp-area="Account" asp-controller="Users" asp-action="Register">Register</a>
+
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><label class="nav-link">@User.Identity.Name</label> </li>
+                            <li class="nav-item"><a class="nav-link text-light btn btn-danger navbar-btn" asp-area="Account" asp-controller="Users" asp-action="Logout">Logout</a></li>
+                        }
+
+                            
+                        
+
+                    </ul>
+                    
                 </div>
             </div>
         </nav>

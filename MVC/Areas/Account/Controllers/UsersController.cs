@@ -40,12 +40,9 @@ namespace MVC.Areas.Account.Controllers
             return View(model);
         }
 
-        // POST: Account/Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(AccountLoginModel model)
+        public IActionResult Login(AccountLoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -58,6 +55,7 @@ namespace MVC.Areas.Account.Controllers
                     {
                         new Claim(ClaimTypes.Name, userResultModel.UserName),
                         new Claim(ClaimTypes.Role, userResultModel.Role.Name),
+                        new Claim(ClaimTypes.Sid, userResultModel.Id.ToString())
                     };
 
 
@@ -65,65 +63,61 @@ namespace MVC.Areas.Account.Controllers
 
                     var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal).Wait();
 
+
+                    if (!string.IsNullOrWhiteSpace(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    return RedirectToAction("Index", "Home", new { area = "" });
                 }
 
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", result.Message);
             }
-            // Add get related items service logic here to set ViewData if necessary and update null parameter in SelectList with these items
-            ViewData["RoleId"] = new SelectList(null, "Id", "Name", user.RoleId);
-            return View(user);
+          
+            return View();
         }
 
-        // GET: Account/Users/Edit/5
-        public IActionResult Edit(int id)
+
+        public IActionResult Logout() //Çıkış
         {
-            UserModel user = null; // TODO: Add get item service logic here
-            if (user == null)
-            {
-                return NotFound();
-            }
-            // Add get related items service logic here to set ViewData if necessary and update null parameter in SelectList with these items
-            ViewData["RoleId"] = new SelectList(null, "Id", "Name", user.RoleId);
-            return View(user);
+            HttpContext.SignOutAsync(); //Cookie kaldırılır
+
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
 
-        // POST: Account/Users/Edit
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        public IActionResult AccessDenied() //Yetkiniz yok sayfası
+        {
+            return View("_Error", "Access is denied for this page");
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(UserModel user)
+        public IActionResult Register(AccountRegisterModel model) //User Register
         {
             if (ModelState.IsValid)
             {
-                // TODO: Add update service logic here
-                return RedirectToAction(nameof(Index));
+                var result = _accountService.Register(model);
+                if (result.IsSuccessful)
+                {
+                    TempData["Message"] = result.Message;
+                    return RedirectToAction(nameof(Login));
+                }
+                ModelState.AddModelError("", result.Message);
+
             }
-            // Add get related items service logic here to set ViewData if necessary and update null parameter in SelectList with these items
-            ViewData["RoleId"] = new SelectList(null, "Id", "Name", user.RoleId);
-            return View(user);
+            return View(model);
         }
 
-        // GET: Account/Users/Delete/5
-        public IActionResult Delete(int id)
-        {
-            UserModel user = null; // TODO: Add get item service logic here
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
 
-        // POST: Account/Users/Delete
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            // TODO: Add delete service logic here
-            return RedirectToAction(nameof(Index));
-        }
+
+
+
 	}
 }

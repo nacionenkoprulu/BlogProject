@@ -1,13 +1,15 @@
-﻿#nullable disable
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DataAccess.Contexts;
 using DataAccess.Entities;
 using Business.Services;
 using Business.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace MVC.Controllers
 {
+    
     public class BlogsController : Controller
     {
         // Add service injections here
@@ -23,10 +25,15 @@ namespace MVC.Controllers
         }
 
         // GET: Blogs
+
         public IActionResult Index()
         {
-            List<BlogModel> blogList = _blogService.Query().ToList();
-            return View(blogList);
+            if (User.Identity.IsAuthenticated) //Giriş yapıldı mı?
+            {
+                List<BlogModel> blogList = _blogService.Query().ToList();
+                return View(blogList);
+            }
+            return RedirectToAction("Login", "Users", new { Areas = "Account" });
         }
 
         // GET: Blogs/Details/5
@@ -42,13 +49,24 @@ namespace MVC.Controllers
         }
 
         // GET: Blogs/Create
+        [Authorize]
         public IActionResult Create()
         {
             // Add get related items service logic here to set ViewData if necessary and update null parameter in SelectList with these items
-            ViewData["UserId"] = new SelectList(_userService.GetList(), "Id", "UserName");
+            //ViewData["UserId"] = new SelectList(_userService.GetList(), "Id", "UserName");
+
             ViewBag.Tags = new MultiSelectList(_tagService.Query().ToList(), "Id", "Name");
-            return View();
+
+            BlogModel model = new BlogModel()
+            {
+                UserId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value)
+            };
+
+            return View(model);
+
         }
+    
+
 
         // POST: Blogs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -59,7 +77,9 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
+                blog.UserId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
                 var result = _blogService.Add(blog);
+                
                 if (result.IsSuccessful)
                 {
                     TempData["Message"] = result.Message;
@@ -77,13 +97,23 @@ namespace MVC.Controllers
         }
 
         // GET: Blogs/Edit/5
+        [Authorize]
         public IActionResult Edit(int id)
         {
+
             BlogModel blog = _blogService.Query().SingleOrDefault(b => b.Id == id);
             if (blog == null)
             {
-                return View("_Error","Blog not found!");
+                return View("_Error", "Blog not found!");
             }
+
+			var _userId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
+			if (User.IsInRole("User") && _userId != blog.UserId) //Sadece kendi blogunu düzenleyebilecek
+            {
+				TempData["Message"] = "You don't have permission to edip this blog!";
+				return RedirectToAction(nameof(Index));
+			}
+
             // Add get related items service logic here to set ViewData if necessary and update null parameter in SelectList with these items
             ViewData["UserId"] = new SelectList(_userService.GetList(), "Id", "UserName");
             ViewBag.Tags = new MultiSelectList(_tagService.Query().ToList(), "Id", "Name",blog.TagIds);
@@ -97,10 +127,22 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(BlogModel blog)
         {
-            if (ModelState.IsValid)
+			var _userId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
+			
+            if (User.IsInRole("User") && _userId != blog.UserId) //Sadece kendi blogunu düzenleyebilecek
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			if (ModelState.IsValid)
             {
 
+                if (User.IsInRole("User"))
+                {
+                    blog.UserId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
+				}
                 var result = _blogService.Update(blog);
+                
                 if (result.IsSuccessful)
                 {
                     TempData["Message"] = result.Message;
@@ -114,14 +156,21 @@ namespace MVC.Controllers
 			return View(blog);
         }
 
-
+        [Authorize]
         public IActionResult Delete(int id)
         {
-
+            var blog = _blogService.Query().SingleOrDefault(b => b.Id == id);
+			
+            var _userId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
+			
+            if (User.IsInRole("User") && blog.UserId != _userId)
+            {
+				TempData["Message"] = "You don't have permission to delete this blog!";
+				return RedirectToAction(nameof(Index));
+			}
+			
             var result = _blogService.Delete(id);
-
             TempData["Message"] = result.Message;
-
             return RedirectToAction(nameof(Index));
         }
 	}

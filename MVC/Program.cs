@@ -2,6 +2,7 @@ using AppCore.DataAccess.EntityFramework.Bases;
 using Business.Services;
 using DataAccess.Contexts;
 using DataAccess.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -36,9 +37,24 @@ builder.Services.AddScoped(typeof(RepoBase<>), typeof(Repo<>));
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 #endregion
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(config => //action delege tipi
+    {
+        config.LoginPath = "/Account/Users/Login";
+        //Yetkisi olmayan kullanýcýnýn kaynaða ulaþmaya çalýþanýn yönledirileceði adres
+        config.AccessDeniedPath = "/Account/Users/AccessDenied";
+
+        config.ExpireTimeSpan = TimeSpan.FromMinutes(30); //cookie kullaným süresi
+
+        config.SlidingExpiration = true; //Kullanýcý iþlem yaptýkça cookie süresini kaydýrýyor
+    });
+
 
 
 
@@ -70,7 +86,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+
+app.UseAuthentication(); //Kullnýcý sorgulama
+
+app.UseAuthorization(); //Yetkili olup olmadýðýný sorguluyor
 
 
 #region Area
