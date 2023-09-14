@@ -33,7 +33,7 @@ namespace MVC.Controllers
                 List<BlogModel> blogList = _blogService.Query().ToList();
                 return View(blogList);
             }
-            return RedirectToAction("Login", "Users", new { Areas = "Account" });
+            return RedirectToAction("Login", "Users", new { Area = "Account" });
         }
 
         // GET: Blogs/Details/5

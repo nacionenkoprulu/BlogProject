@@ -24,6 +24,7 @@ namespace DataAccess.Entities
 
         public List<Blog> Blogs { get; set; }
 
+		public UserDetail UserDetail { get; set; }
 
-    }
+	}
 }

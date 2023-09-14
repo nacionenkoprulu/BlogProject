@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\07_Base_Generics_Project\AppCore\AppCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

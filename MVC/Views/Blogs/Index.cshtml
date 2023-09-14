@@ -57,7 +57,9 @@
 						@Html.DisplayFor(modelItem => item.UserNameDisplay)
 					</td>
 					<td>
-                        
+
+                        <a asp-controller="Favorites" asp-action="AddToFavorites" asp-route-blogId="@item.Id"><i class="bi bi-bookmark-heart"></i></a>
+                        &nbsp;| &nbsp;
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                         &nbsp;| &nbsp;
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
@@ -66,7 +68,8 @@
 						@* <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
                         <a href="#" onclick="deleteBlog(@item.Id);">Delete</a> @*Silme işlemini AlertifyJS ile yapıyoruz. O yüzden yukarıdakini kapadık*@
 
-					</td>
+                </td>
+                
 				</tr>
 		}
     </tbody>

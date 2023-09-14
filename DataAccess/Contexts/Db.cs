@@ -21,6 +21,13 @@ namespace DataAccess.Contexts
 
         public DbSet<Role> Roles { get; set; }
 
+        public DbSet<UserDetail> UserDetails { get; set; }
+
+        public DbSet<Country> Countries { get; set; }
+
+        public DbSet<City> Cities { get; set; }
+
+
         public Db(DbContextOptions options) : base(options)
         {
             
@@ -30,7 +37,34 @@ namespace DataAccess.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BlogTag>().HasKey(bt => new { bt.BlogId, bt.TagId });
-        }
+
+            modelBuilder.Entity<UserDetail>()
+                .HasOne(ud => ud.User)
+                .WithOne(u => u.UserDetail)
+                .HasForeignKey<UserDetail>(ud => ud.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+			
+
+			modelBuilder.Entity<UserDetail>()
+                .HasOne(ud => ud.Country)
+                .WithMany(c => c.UserDetails)
+                .HasForeignKey(ud => ud.CountryId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+			modelBuilder.Entity<UserDetail>()
+				.HasOne(ud => ud.City)
+				.WithMany(c => c.UserDetails)
+				.HasForeignKey(ud => ud.CityId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+			modelBuilder.Entity<City>()
+				.HasOne(c=>c.Country)
+				.WithMany(co=>co.Cities)
+				.HasForeignKey(ci=>ci.CountryId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+
+		}
 
 
     }

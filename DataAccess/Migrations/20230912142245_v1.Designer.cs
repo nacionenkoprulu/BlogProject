@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(Db))]
-    [Migration("20230901190237_v1")]
+    [Migration("20230912142245_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -80,6 +80,52 @@ namespace DataAccess.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("BlogTags");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Guid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Guid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Role", b =>
@@ -161,6 +207,40 @@ namespace DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.UserDetail", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Sex")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("UserDetails");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Blog", b =>
                 {
                     b.HasOne("DataAccess.Entities.User", "User")
@@ -191,6 +271,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.City", b =>
+                {
+                    b.HasOne("DataAccess.Entities.Country", "Country")
+                        .WithMany("Cities")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.User", b =>
                 {
                     b.HasOne("DataAccess.Entities.Role", "Role")
@@ -202,9 +293,48 @@ namespace DataAccess.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("DataAccess.Entities.UserDetail", b =>
+                {
+                    b.HasOne("DataAccess.Entities.City", "City")
+                        .WithMany("UserDetails")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.Country", "Country")
+                        .WithMany("UserDetails")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Entities.User", "User")
+                        .WithOne("UserDetail")
+                        .HasForeignKey("DataAccess.Entities.UserDetail", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DataAccess.Entities.Blog", b =>
                 {
                     b.Navigation("BlogTags");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.City", b =>
+                {
+                    b.Navigation("UserDetails");
+                });
+
+            modelBuilder.Entity("DataAccess.Entities.Country", b =>
+                {
+                    b.Navigation("Cities");
+
+                    b.Navigation("UserDetails");
                 });
 
             modelBuilder.Entity("DataAccess.Entities.Role", b =>
@@ -220,6 +350,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Entities.User", b =>
                 {
                     b.Navigation("Blogs");
+
+                    b.Navigation("UserDetail");
                 });
 #pragma warning restore 612, 618
         }

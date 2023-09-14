@@ -1,5 +1,6 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -26,26 +27,74 @@ namespace MVC.Controllers
             var tags = _db.Tags.ToList();
             _db.Tags.RemoveRange(tags);
 
-            var users = _db.Users.ToList();
+			var userDetails = _db.UserDetails.ToList();
+			_db.UserDetails.RemoveRange(userDetails);
+
+			var users = _db.Users.ToList();
             _db.Users.RemoveRange(users);
 
-            var roles = _db.Roles.ToList();
+			var roles = _db.Roles.ToList();
             _db.Roles.RemoveRange(roles);
 
-            if (roles.Count > 0) // eğer veritabanında rol kaydı varsa eklenecek rollerin rol id'lerini aşağıdaki SQL komutu üzerinden 1'den başlayacak hale getiriyoruz
-                                 // eğer kayıt yoksa o zaman zaten rol tablosuna daha önce veri eklenmemiştir dolayısıyla rol id'leri 1'den başlayacaktır
+			// eğer veritabanında rol kaydı varsa eklenecek rollerin rol id'lerini aşağıdaki SQL komutu üzerinden 1'den başlayacak hale getiriyoruz
+			if (roles.Count > 0) // eğer kayıt yoksa o zaman zaten rol tablosuna daha önce veri eklenmemiştir dolayısıyla rol id'leri 1'den başlayacaktır
             {
                 _db.Database.ExecuteSqlRaw("dbcc CHECKIDENT ('Roles', RESEED, 0)"); // ExecuteSqlRaw methodu üzerinden istenilen SQL sorgusu elle yazılıp veritabanında çalıştırılabilir
             }
 
-            var blogs = _db.Blogs.ToList();
+			var cities = _db.Cities.ToList();
+			_db.Cities.RemoveRange(cities);
+
+			var countries = _db.Countries.ToList();
+			_db.Countries.RemoveRange(countries);
+
+			var blogs = _db.Blogs.ToList();
             _db.Blogs.RemoveRange(blogs);
 
             _db.SaveChanges();
-            #endregion
+			#endregion
 
 
-            _db.Roles.Add(new Role()
+			_db.Countries.Add(new Country()
+			{
+				Name = "United States",
+				Cities = new List<City>()
+				{
+					new City()
+					{
+						Name = "Los Angeles"
+					},
+					new City()
+					{
+						Name = "New York"
+					}
+				}
+			});
+			_db.Countries.Add(new Country()
+			{
+				Name = "Turkey",
+				Cities = new List<City>()
+				{
+					new City()
+					{
+						Name = "Ankara"
+					},
+					new City()
+					{
+						Name = "Istanbul"
+					},
+					new City()
+					{
+						Name = "Izmir"
+					}
+				}
+			});
+
+
+			_db.SaveChanges();
+
+
+			_db.Roles.Add(new Role()
             {
                 Name = "Admin",
                 Users = new List<User>()
@@ -54,8 +103,16 @@ namespace MVC.Controllers
                 {
                     UserName = "cagil",
                     Password = "cagil",
-                    IsActive = true
-                }
+                    IsActive = true,
+					UserDetail = new UserDetail()
+				    {
+				    	Address = "Cankaya",
+				    	CityId = _db.Cities.SingleOrDefault(c => c.Name == "Ankara").Id,
+				    	CountryId = _db.Countries.SingleOrDefault(c => c.Name == "Turkey").Id,
+				    	Email = "cagil@etrade.com",
+				    	Sex = Sex.Man
+				    }
+				}
             }
             });
 
@@ -68,8 +125,16 @@ namespace MVC.Controllers
                 {
                     UserName = "leo",
                     Password = "leo",
-                    IsActive = true
-                }
+                    IsActive = true,
+					UserDetail = new UserDetail()
+					{
+						Address = "Hollywood",
+						CityId = _db.Cities.SingleOrDefault(c => c.Name == "Los Angeles").Id,
+						CountryId = _db.Countries.SingleOrDefault(c => c.Name == "United States").Id,
+						Email = "leo@etrade.com",
+						Sex = Sex.Man
+					}
+				}
             }
             });
 

@@ -1,4 +1,4 @@
-using AppCore.DataAccess.EntityFramework.Bases;
+﻿using AppCore.DataAccess.EntityFramework.Bases;
 using Business.Services;
 using DataAccess.Contexts;
 using DataAccess.Repositories;
@@ -25,9 +25,17 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 #endregion
 
 
-#region Localization
+#region IoC Container
+// Alternatif olarak Business katmanýnda Autofac ve Ninject gibi kütüphaneler de kullanýlabilir.
 
-// Add services to the container.
+// Unable to resolve service hatalarý burada çözümlenmelidir.
+
+// AddScoped: istek (request) boyunca objenin referansýný (genelde interface veya abstract class) kullandýðýmýz yerde obje (somut class'tan oluþturulacak)
+// bir kere oluþturulur ve yanýt (response) dönene kadar bu obje hayatta kalýr.
+// AddSingleton: web uygulamasý baþladýðýnda objenin referansný (genelde interface veya abstract class) kullandýðýmýz yerde obje (somut class'tan oluþturulacak)
+// bir kere oluþturulur ve uygulama çalýþtýðý (IIS üzerinden uygulama durdurulmadýðý veya yeniden baþlatýlmadýðý) sürece bu obje hayatta kalýr.
+// AddTransient: istek (request) baðýmsýz ihtiyaç olan objenin referansýný (genelde interface veya abstract class) kullandýðýmýz her yerde bu objeyi new'ler.
+// Genelde AddScoped methodu kullanýlýr.
 
 var connectionString = builder.Configuration.GetConnectionString("Db");
 builder.Services.AddDbContext<Db>(options => options.UseSqlServer(connectionString));
@@ -38,27 +46,44 @@ builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-
-
 #endregion
-
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(config => //action delege tipi
-    {
-        config.LoginPath = "/Account/Users/Login";
-        //Yetkisi olmayan kullan�c�n�n kayna�a ula�maya �al��an�n y�nledirilece�i adres
-        config.AccessDeniedPath = "/Account/Users/AccessDenied";
-
-        config.ExpireTimeSpan = TimeSpan.FromMinutes(30); //cookie kullan�m s�resi
-
-        config.SlidingExpiration = true; //Kullan�c� i�lem yapt�k�a cookie s�resini kayd�r�yor
-    });
-
-
 
 
 builder.Services.AddControllersWithViews();
+
+
+#region Authentication
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    // projeye Cookie authentication default'larýný kullanarak kimlik doðrulama ekliyoruz
+
+    .AddCookie(config =>
+    {
+        config.LoginPath = "/Account/Users/Login";
+        // eðer sisteme giriþ yapýlmadan bir iþlem yapýlmaya çalýþýlýrsa kullanýcýyý Account area -> Users controller -> Login action'ýna yönlendir
+
+        config.AccessDeniedPath = "/Account/Users/AccessDenied";
+        // eðer sisteme giriþ yapýldýktan sonra yetki dýþý bir iþlem yapýlmaya çalýþýlýrsa kullanýcýyý Account area -> Users controller -> AccessDenied
+        // action'ýna yönlendir
+
+        config.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        // sisteme giriþ yapýldýktan sonra oluþan cookie 30 dakika boyunca kullanýlabilsin
+
+        config.SlidingExpiration = true;
+        // SlidingExpiration true yapýlarak kullanýcý sistemde her iþlem yaptýðýnda cookie kullaným süresi yukarýda belirtilen 30 dakika uzatýlýr,
+        // eðer false atanýrsa kullanýcýnýn cookie ömrü yukarýda belirtilen 30 dakika sonra sona erer ve yeniden giriþ yapmak zorunda kalýr
+    });
+#endregion
+
+#region Session
+builder.Services.AddSession(config =>
+{
+
+config.IdleTimeout = TimeSpan.FromMinutes(30); //Default süre 20dk
+config.IOTimeout = Timeout.InfiniteTimeSpan;
+
+}); 
+#endregion
 
 var app = builder.Build();
 
@@ -70,7 +95,6 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
     SupportedUICultures = cultures,
 });
 #endregion
-
 
 
 // Configure the HTTP request pipeline.
@@ -87,9 +111,16 @@ app.UseStaticFiles();
 app.UseRouting();
 
 
-app.UseAuthentication(); //Kulln�c� sorgulama
+app.UseAuthentication(); //Kullnıcı sorgulama
 
-app.UseAuthorization(); //Yetkili olup olmad���n� sorguluyor
+app.UseAuthorization(); //Yetkili olup olmadığını sorguluyor
+
+
+#region Session
+
+app.UseSession(); 
+
+#endregion
 
 
 #region Area
