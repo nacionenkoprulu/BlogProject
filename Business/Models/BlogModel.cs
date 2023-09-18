@@ -3,8 +3,10 @@
 
 
 using AppCore.Records.Bases;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Business.Models
 {
@@ -34,6 +36,11 @@ namespace Business.Models
         [Required(ErrorMessage = "{0} is required!")]
         public int? UserId { get; set; }
 
+		public string ImageURL { get; set; }
+
+        public string ImageName { get; set; }
+
+
         #endregion
 
         #region View'larda Gösterim veya Veri Girişi için Kullanacağımız Özellikler
@@ -56,7 +63,18 @@ namespace Business.Models
         [Required(ErrorMessage = "{0} are required!")]
         public List<int> TagIds { get; set; }
 
+		[DisplayName("Choose Image")]
+		public IFormFile Image { get; set; }
+
+        public string ImageSrcDisplay { get; set; }
+
         #endregion
+
+
+
+
+
+
 
         /*
         Entity ve model özelliklerinde kullanılabilecek bazı genel data annotation'lar (attribute): 

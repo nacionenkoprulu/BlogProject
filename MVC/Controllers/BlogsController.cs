@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using DataAccess.Contexts;
-using DataAccess.Entities;
+﻿using Business.Models;
 using Business.Services;
-using Business.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace MVC.Controllers
 {
-    
-    public class BlogsController : Controller
+
+	public class BlogsController : Controller
     {
         // Add service injections here
         private readonly IBlogService _blogService;
@@ -75,7 +73,8 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(BlogModel blog)
         {
-            if (ModelState.IsValid)
+
+			if (ModelState.IsValid)
             {
                 blog.UserId = Convert.ToInt32(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value);
                 var result = _blogService.Add(blog);

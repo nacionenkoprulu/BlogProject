@@ -76,6 +76,24 @@ namespace Business.Services
                 Role = new RoleModel()
                 {
                     Name = u.Role.Name,
+                },
+                UserDetail = new UserDetailModel()
+                {
+                    Address = u.UserDetail.Address,
+                    Email = u.UserDetail.Email,
+                    CityId = u.UserDetail.CityId,
+                    CountryId = u.UserDetail.CountryId,
+                    Phone = u.UserDetail.Phone,
+                    Sex = u.UserDetail.Sex,
+                    City = new CityModel()
+                    {
+                        Name = u.UserDetail.City.Name,
+                        
+                    },
+                    Country = new CountryModel()
+                    {
+                        Name = u.UserDetail.Country.Name
+                    }
                 }
 
             });

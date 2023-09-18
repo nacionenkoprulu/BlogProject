@@ -57,14 +57,28 @@ namespace Business.Services
 
                 }).ToList(),
 
-                TagIds = b.BlogTags.Select(bt => bt.TagId).ToList()
-
-
+                TagIds = b.BlogTags.Select(bt => bt.TagId).ToList(),
+                ImageSrcDisplay = "/Images/BlogImages/" + b.ImageName
 
             });
         }
         public Result Add(BlogModel model)
         {
+
+            var location = "";
+            var newImageName = "";
+
+            if (model.Image is not null)
+            {
+                var extension = Path.GetExtension(model.Image.FileName);
+                newImageName = Guid.NewGuid() + extension;
+                location = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images/BlogImages",newImageName);
+                var stream = new FileStream(location, FileMode.Create);
+
+                model.Image.CopyTo(stream);
+            }
+
+
             Blog entity = new Blog()
             {
                 Title = model.Title.Trim(),
@@ -76,7 +90,10 @@ namespace Business.Services
                 BlogTags = model.TagIds.Select(tagId => new BlogTag()
                 {
                     TagId = tagId
-                }).ToList()
+                }).ToList(),
+
+                ImageURL = location,
+                ImageName = newImageName
 
             };
 

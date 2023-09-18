@@ -13,6 +13,15 @@
     <hr />
     <dl class="row">
         <dt class="col-2">
+            @Html.DisplayNameFor(model => model.ImageURL)
+        </dt>
+        <dd class="col-10">
+            <div class="col-5">
+                <img src="@Model.ImageSrcDisplay" class="img-fluid" alt="BlogImage">
+            </div>
+        </dd>
+
+        <dt class="col-2">
             @Html.DisplayNameFor(model => model.Title)
         </dt>
         <dd class="col-10">

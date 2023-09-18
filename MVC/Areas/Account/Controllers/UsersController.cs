@@ -22,11 +22,37 @@ namespace MVC.Areas.Account.Controllers
     {
         // Add service injections here
         private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public UsersController(IAccountService accountService)
+        public UsersController(IAccountService accountService, IUserService userService)
         {
             _accountService = accountService;
+            _userService = userService;
         }
+
+
+
+        public IActionResult Index()
+        {
+
+            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                List<UserModel> users = _userService.GetList();
+                return View(users);
+            }
+
+            return RedirectToAction("Login", "Users", new { Area = "Account" });
+        }
+
+        public IActionResult Details(int userId)
+        {
+
+            var user = _userService.Query().SingleOrDefault(u => u.Id == userId);
+
+            return View(user);
+
+        }
+
 
         // GET: Account/Users/Login
         public IActionResult Login(string returnUrl)

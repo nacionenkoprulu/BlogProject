@@ -27,8 +27,12 @@ namespace Business.Models
 
 
         //Gösterim için eklenenler
-        public RoleModel Role { get; set; } = new RoleModel();
+        #region Entity Referans Özelliklerine Karşılık Kullanacağımız Özellikler
 
+        public RoleModel Role { get; set; } = new RoleModel();
+        public UserDetailModel UserDetail { get; set; } // kullanıcı detaylarını tek yerden yönetebilmek için hem burada hem de
+                                                        // AccountRegisterModel'da referans özelliği olarak kullanıyoruz,
+        #endregion
 
 
     }

@@ -26,12 +26,33 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Tags" asp-action="Index">Tags</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Db" asp-action="Seed">DB Seed</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Favorites" asp-action="GetFavorites">My Favorites</a>
-                        </li>
+                        @if(User.Identity.IsAuthenticated) //sisteme giriş yaptıysa
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Favorites" asp-action="GetFavorites">My Favorites</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin")) //Giriş yapan kullanıcı adminse
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Db" asp-action="Seed">DB Seed</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" role="button" href="#" data-bs-toggle="dropdown" aria-expanded="true">
+                                    Users Managements
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Account" asp-controller="Users" asp-action="Index">Users List</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">Example</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
