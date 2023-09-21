@@ -46,6 +46,8 @@ builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 #endregion
 
 

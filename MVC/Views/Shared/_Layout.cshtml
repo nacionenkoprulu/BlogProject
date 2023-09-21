@@ -26,13 +26,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Tags" asp-action="Index">Tags</a>
                         </li>
-                        @if(User.Identity.IsAuthenticated) //sisteme giriş yaptıysa
+                        @if(User.Identity.IsAuthenticated) //Kullanıcı sisteme giriş yaptıysa:
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Favorites" asp-action="GetFavorites">My Favorites</a>
                             </li>
                         }
-                        @if (User.IsInRole("Admin")) //Giriş yapan kullanıcı adminse
+                        @if (User.IsInRole("Admin")) //Giriş yapan kullanıcı Admin ise:
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Db" asp-action="Seed">DB Seed</a>
@@ -50,6 +50,9 @@
                                         <a class="dropdown-item" href="#">Example</a>
                                     </li>
                                 </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Report" asp-controller="Home" asp-action="Index">Report</a>
                             </li>
                         }
                         

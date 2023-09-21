@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using AppCore.Business.Services.Bases;
+﻿using AppCore.Business.Services.Bases;
 using AppCore.DataAccess.EntityFramework.Bases;
 using AppCore.Results;
 using AppCore.Results.Bases;
@@ -13,6 +11,8 @@ namespace Business.Services
 	public interface IUserService : IService<UserModel>
     {
         List<UserModel> GetList(); //Bu class'a özel metod
+
+        List<UserModel> GetListByRole(int? roleId = null);
 
     }
 
@@ -61,6 +61,14 @@ namespace Business.Services
         public List<UserModel> GetList()
         {
             return Query().ToList();
+        }
+
+        public List<UserModel> GetListByRole(int? roleId = null)
+        {
+            if(roleId==null)
+                return new List<UserModel>();
+
+            return Query().Where(u=>u.RoleId==roleId).ToList();
         }
 
         public IQueryable<UserModel> Query()
