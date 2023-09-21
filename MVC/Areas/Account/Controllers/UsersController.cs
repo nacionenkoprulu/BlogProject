@@ -23,11 +23,15 @@ namespace MVC.Areas.Account.Controllers
         // Add service injections here
         private readonly IAccountService _accountService;
         private readonly IUserService _userService;
+        private readonly ICountryService _countryService;
+        private readonly ICityService _cityService;
 
-        public UsersController(IAccountService accountService, IUserService userService)
+        public UsersController(IAccountService accountService, IUserService userService, ICountryService countryService, ICityService cityService)
         {
             _accountService = accountService;
             _userService = userService;
+            _countryService = countryService;
+            _cityService = cityService;
         }
 
 
@@ -120,6 +124,9 @@ namespace MVC.Areas.Account.Controllers
 
         public IActionResult Register()
         {
+            ViewBag.Countries = new SelectList(_countryService.Query().ToList(), "Id", "Name");
+
+
             return View();
         }
 
@@ -138,6 +145,12 @@ namespace MVC.Areas.Account.Controllers
                 ModelState.AddModelError("", result.Message);
 
             }
+
+            ViewBag.Countries = new SelectList(_countryService.Query().ToList(), "Id", "Name", model.UserDetail.CountryId);
+
+            ViewBag.Cities = new SelectList(_cityService.GetList(model.UserDetail.CountryId ?? 0), "Id", "Name", model.UserDetail.CityId);
+
+
             return View(model);
         }
 

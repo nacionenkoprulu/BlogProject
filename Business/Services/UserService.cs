@@ -41,6 +41,15 @@ namespace Business.Services
                 IsActive = model.IsActive,
                 Password = model.Password,
                 RoleId = model.RoleId,
+                UserDetail = new UserDetail()
+                {
+                    Address = model.UserDetail.Address.Trim(),
+                    CityId = model.UserDetail.CityId.Value, // UserDetailModel'de Required olduğu için Value kullanabiliriz
+                    CountryId = model.UserDetail.CountryId.Value, // UserDetailModel'de Required olduğu için Value kullanabiliriz
+                    Email = model.UserDetail.Email.Trim(),
+                    Phone = model.UserDetail.Phone?.Trim(), // UserDetailModel'da zorunlu olmadığı yani null gelebileceği için ? kullandık
+                    Sex = model.UserDetail.Sex
+                }
             };
 
             _userRepo.Add(entity);

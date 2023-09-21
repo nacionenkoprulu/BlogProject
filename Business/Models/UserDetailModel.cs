@@ -1,4 +1,6 @@
-﻿using DataAccess.Enums;
+﻿#nullable disable
+
+using DataAccess.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -51,6 +51,15 @@ namespace Business.Services
                 RoleId = Convert.ToInt16(Roles.User),
                 IsActive = true,
                 Password = model.Password,
+                UserDetail = new UserDetailModel()
+                {
+                    Address = model.UserDetail.Address,
+                    CityId = model.UserDetail.CityId,
+                    CountryId = model.UserDetail.CountryId,
+                    Email = model.UserDetail.Email,
+                    Phone = model.UserDetail.Phone,
+                    Sex = model.UserDetail.Sex,  
+                }
 
             };
 

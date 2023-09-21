@@ -29,6 +29,8 @@ namespace Business.Models
         [DisplayName("Confirm Password")]
         public string ConfirmPassword { get; set; }
 
+        public UserDetailModel UserDetail { get; set; }
+
 
 
     }
