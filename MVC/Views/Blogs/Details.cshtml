@@ -11,16 +11,23 @@
 <div>
     <h4>Blog</h4>
     <hr />
+    @if (TempData["Message"] is not null)
+    {
+        <p>@TempData["Message"]</p>
+    }
     <dl class="row">
-        <dt class="col-2">
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-        <dd class="col-10">
-            <div class="col-8">
-            <img src="@Model.ImageSrcDisplay" style="height:auto; max-width: 50%; vertical-align:middle; object-fit: cover; width:1280px; aspect-ratio:auto 1280/720;" class="img-fluid" alt="BlogImage">
-            </div>
-        </dd>
-
+        
+        @if (Model.ImageSrcDisplay != "/Images/BlogImages/")
+        {
+            <dt class="col-2">
+                @Html.DisplayNameFor(model => model.ImageURL)
+            </dt>
+            <dd class="col-10">
+                <div class="col-8">
+                    <img src="@Model.ImageSrcDisplay" style="height:auto; max-width: 50%; vertical-align:middle; object-fit: cover; width:1280px; aspect-ratio:auto 1280/720;" class="img-fluid" alt="BlogImage">
+                </div>
+            </dd>
+        }
         <dt class="col-2">
             @Html.DisplayNameFor(model => model.Title)
         </dt>

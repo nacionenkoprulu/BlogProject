@@ -100,7 +100,8 @@ namespace Business.Services
 				return new ErrorResult("Tag with the same name exists!");
 			}
 
-            Tag entity = new Tag()
+			//Bir diğer yöntem id üzerinden entity çekilmesi ve onun güncellenmesi işlemidir
+			Tag entity = new Tag() 
             {
                 Id = model.Id,
                 Guid = model.Guid,

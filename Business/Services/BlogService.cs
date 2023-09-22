@@ -16,8 +16,9 @@ namespace Business.Services
 
     public interface IBlogService : IService<BlogModel>
     {
+        Result DeleteImg(int blogId);
 
-    }
+	}
 
 
     public class BlogService : IBlogService
@@ -136,24 +137,54 @@ namespace Business.Services
 
             DeleteRelationalBlogTags(model.Id);
 
-            Blog entity = new Blog()
+
+            var entity = _blogRepo.GetItem(model.Id);
+
+
+            //entity.Id = model.Id;
+            //entity.Guid = model.Guid;
+            entity.Title = model.Title;
+            entity.Content = model.Content;
+            entity.UpdateDate = DateTime.Now;
+            entity.Score = model.Score;
+            entity.UserId = model.UserId.Value;
+            entity.BlogTags = model.TagIds.Select(tagIds => new BlogTag()
             {
-                Id = model.Id,
-                Guid = model.Guid,
-                Title = model.Title,
-                Content = model.Content,
-                UpdateDate = DateTime.Now,
-                Score = model.Score,
-                UserId = model.UserId.Value,
-                BlogTags = model.TagIds.Select(tagIds => new BlogTag()
-                {
-                    TagId = tagIds
-                }).ToList()
+                TagId = tagIds
+            }).ToList();
 
-            };
 
-            _blogRepo.Update(entity);
+
+            var location = entity.ImageURL;
+            var newImageName = entity.ImageName;
+
+			if (model.Image is not null)
+			{
+				
+				var extension = Path.GetExtension(model.Image.FileName);
+				newImageName = Guid.NewGuid() + extension;
+				location = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images/BlogImages", newImageName);
+				var stream = new FileStream(location, FileMode.Create);
+
+				model.Image.CopyTo(stream);
+				entity.ImageURL = location;
+				entity.ImageName = newImageName;
+			}
+
+
+			_blogRepo.Update(entity);
             return new SuccessResult("Blog updated successfully");
         }
-    }
+
+		public Result DeleteImg(int blogId)
+		{
+            var entity = _blogRepo.GetItem(blogId);
+            entity.ImageURL = null;
+            entity.ImageName = null;
+            _blogRepo.Update(entity);
+
+            return new SuccessResult("Photo deleted is successfully!");
+
+		}
+	}
 }

@@ -12,9 +12,32 @@
 <hr />
 <div class="row">
     <div class="col-12">
-        <form asp-action="Edit">
+		<form asp-action="Edit" enctype="multipart/form-data">
 		@Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="text-danger"></div>
+			<div asp-validation-summary="All" class="text-danger"></div>
+			@if (Model.ImageSrcDisplay != "/Images/BlogImages/")
+			{
+				<div class="row mb-3">
+					<div class="col-10 offset-2">
+						<div style="height:auto; max-width: 49%; max-height:50%; vertical-align:middle; object-fit: cover; width:1280px; aspect-ratio:auto 1280/720;">
+							<img src="@Model.ImageSrcDisplay" class="img-fluid" alt="BlogImage">
+						</div>
+					</div>
+				</div>
+			}
+			<div class="row mb-3">
+				<label asp-for="Image" class="col-2 col-form-laber"></label>
+				@if (Model.ImageSrcDisplay != "/Images/BlogImages/")
+				{
+					<div class="col-1">
+						<a asp-action="DeleteImage" asp-route-blogId="@Model.Id" class="btn btn-danger" id="clrBtn">Img Clear</a>
+					</div>
+				}
+				<div class="col-4">
+					<input id="img" type="file" name="image" class="form-control" accept="" />
+				</div>
+			</div>
+			
 			@if (User.IsInRole("Admin")) //Sadece admin score değerini değiştirebilir.
 			{
 				<div class="row mb-3">
@@ -67,6 +90,24 @@
     </div>
 </div>
 
+@section Scripts{
+
+
+	<script>
+
+		$(function () {
+			$("#clrBtn").click(function () {
+				$("#img").empty();
+			});
+		});
+
+		
+	</script>
+	
+
+
+
+}
 
 
 

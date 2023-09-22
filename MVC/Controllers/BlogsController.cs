@@ -1,7 +1,9 @@
-﻿using Business.Models;
+﻿using AppCore.Results.Bases;
+using Business.Models;
 using Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
@@ -171,6 +173,14 @@ namespace MVC.Controllers
             var result = _blogService.Delete(id);
             TempData["Message"] = result.Message;
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult DeleteImage(int blogId)
+        {
+            var result = _blogService.DeleteImg(blogId);
+
+            TempData["Message"] = result.Message;
+			return RedirectToAction(nameof(Details), new { id = blogId });
         }
 	}
 }
